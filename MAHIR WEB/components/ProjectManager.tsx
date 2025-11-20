@@ -1,4 +1,3 @@
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -106,12 +105,6 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
       let smartTitle = repoData.name
         .replace(/[-_]/g, ' ') // Replace separators with spaces
         .replace(/\b\w/g, (l: string) => l.toUpperCase()); // Title Case
-
-      // Refine Title based on description cues if needed (Optional polish)
-      if (repoData.description && repoData.description.toLowerCase().includes('bot') && !smartTitle.toLowerCase().includes('bot')) {
-         // Only append if not already in title
-         // smartTitle += ' Bot'; 
-      }
 
       // Auto-classify Type based on combined signals
       let detectedType = 'WEB';
