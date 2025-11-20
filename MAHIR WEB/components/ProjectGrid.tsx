@@ -278,4 +278,3 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
     </div>
   )
 }
-
