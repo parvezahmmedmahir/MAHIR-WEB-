@@ -7,7 +7,30 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 // Using gemini-3-pro-preview for complex coding and reasoning tasks.
 const GEMINI_MODEL = 'gemini-3-pro-preview';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Helper to safely access process.env in Vercel/Vite environments without crashing the build
+const getApiKey = (): string => {
+  try {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env) {
+      // @ts-ignore
+      return process.env.API_KEY || '';
+    }
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      // @ts-ignore
+      return import.meta.env.VITE_API_KEY || '';
+    }
+  } catch (e) {
+    return '';
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
+
+// Initialize only if key exists, otherwise use a placeholder to satisfy the constructor types during build
+// This prevents the build from failing even if the API Key variable is missing.
+const ai = new GoogleGenAI({ apiKey: apiKey || 'BUILD_PLACEHOLDER_KEY' });
 
 const SYSTEM_INSTRUCTION = `You are an expert AI Engineer and Product Designer specializing in "bringing artifacts to life".
 Your goal is to take a user uploaded file—which might be a polished UI design, a messy napkin sketch, a photo of a whiteboard with jumbled notes, or a picture of a real-world object (like a messy desk)—and instantly generate a fully functional, interactive, single-page HTML/JS/CSS application.
