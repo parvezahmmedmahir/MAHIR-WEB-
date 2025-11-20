@@ -219,8 +219,23 @@ export const ProjectGrid = ({ projects }: { projects: Project[] }) => {
         ))}
       </div>
 
-      {/* Empty State */}
-      {filteredProjects.length === 0 && (
+      {/* Empty State - Professional System Style */}
+      {projects.length === 0 && !activeTag && (
+           <div className="flex flex-col items-center justify-center py-32 text-zinc-600 border border-zinc-800/50 rounded-xl bg-zinc-900/10">
+              <div className="w-16 h-16 mb-6 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-inner">
+                <ServerIcon className="w-8 h-8 opacity-30 text-emerald-500 animate-pulse" />
+              </div>
+              <h3 className="text-lg font-bold text-zinc-300 font-mono mb-2">SYSTEM ONLINE</h3>
+              <p className="mb-6 font-mono text-xs text-zinc-500 uppercase tracking-wider">Awaiting Project Deployment...</p>
+              <div className="flex items-center space-x-2 px-3 py-1 bg-zinc-900 rounded border border-zinc-800">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] text-zinc-500 font-mono">DB CONNECTED</span>
+              </div>
+          </div>
+      )}
+
+      {/* Empty State - Filtered */}
+      {filteredProjects.length === 0 && activeTag && (
           <div className="flex flex-col items-center justify-center py-24 text-zinc-600 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
               <FunnelIcon className="w-10 h-10 mb-4 opacity-20" />
               <p className="mb-4 font-mono text-sm">System: No modules found for tag <span className="text-blue-500">"{activeTag}"</span></p>
