@@ -3,9 +3,21 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import React, { useState, useRef } from 'react';
-import { XMarkIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, PhotoIcon, TrashIcon, CommandLineIcon, ServerIcon, CodeBracketSquareIcon, ArrowPathIcon, CheckCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { 
+  XMarkIcon, 
+  ClipboardDocumentCheckIcon, 
+  GlobeAltIcon, 
+  PhotoIcon, 
+  TrashIcon, 
+  CommandLineIcon, 
+  ServerIcon, 
+  CodeBracketSquareIcon, 
+  ArrowPathIcon, 
+  CheckCircleIcon, 
+  SparklesIcon 
+} from '@heroicons/react/24/outline';
 
-// Inline GitHub Icon to ensure availability
+// Inline GitHub Icon to ensure availability without external assets
 const GitHubLogo = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
     <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -13,6 +25,9 @@ const GitHubLogo = ({ className }: { className?: string }) => (
 );
 
 export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
+  // ==========================================
+  // 1. STATE DEFINITIONS
+  // ==========================================
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -31,6 +46,9 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // ==========================================
+  // 2. HANDLERS & LOGIC
+  // ==========================================
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -60,7 +78,7 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
       }
   };
 
-  // GITHUB ANALYSIS LOGIC
+  // --- GITHUB ANALYSIS ---
   const analyzeGithubRepo = async () => {
     if (!githubUrl.includes('github.com')) {
       alert('Please enter a valid GitHub repository URL');
@@ -87,12 +105,17 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
       if (!repoRes.ok) throw new Error("Repository not found or private");
       const repoData = await repoRes.json();
 
-      // 2. Fetch Languages
-      const langRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
-      const langData = await langRes.json();
+      // 2. Fetch Languages (Best effort)
+      let languages: string[] = [];
+      try {
+        const langRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/languages`);
+        const langData = await langRes.json();
+        languages = Object.keys(langData).slice(0, 3); // Top 3 languages
+      } catch (e) {
+        console.warn("Could not fetch languages", e);
+      }
 
       // Process Data for Smart Suggestions
-      const languages = Object.keys(langData).slice(0, 3); // Top 3 languages
       const topics = repoData.topics || []; // GitHub Topics
       
       // Smart Tags: Combine Languages and Topics, unique and limited
@@ -143,6 +166,7 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  // --- GENERATION LOGIC ---
   const handleGenerate = () => {
     if (!formData.title || !formData.link) {
         alert("Title and Link are required.");
@@ -202,6 +226,10 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
       setTimeout(() => setCopySuccess(false), 2000);
   };
 
+  // ==========================================
+  // 3. DERIVED VARIABLES (Render Helpers)
+  // ==========================================
+  // Ensure these are defined before return
   const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(t => t !== '');
   
   let previewImage = 'https://via.placeholder.com/800x600/18181b/3f3f46?text=LINK+REQUIRED';
@@ -211,6 +239,9 @@ export const ProjectManager = ({ onClose }: { onClose: () => void }) => {
       previewImage = `https://image.thum.io/get/width/800/crop/600/noanimate/${formData.link}`;
   }
 
+  // ==========================================
+  // 4. RENDER (JSX)
+  // ==========================================
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
       <div className="bg-[#09090b] border border-zinc-800 w-full max-w-6xl h-[90vh] rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
