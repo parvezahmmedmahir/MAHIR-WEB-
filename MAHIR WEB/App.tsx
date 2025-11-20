@@ -10,9 +10,19 @@ import { AboutMe } from './components/AboutMe';
 import { ProjectManager } from './components/ProjectManager';
 import { WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 
-// INITIAL PORTFOLIO DATA (Permanent List)
-// Paste new projects generated from the Admin Panel here.
+// ==================================================================================
+// 🟢 SYSTEM DATABASE (MANUAL INPUT)
+// ==================================================================================
+// INSTRUCTIONS:
+// 1. Open "Manager Mode" in the website footer.
+// 2. Generate your project.
+// 3. Copy the code snippet provided.
+// 4. Paste it inside the array below (at the top).
+// ==================================================================================
+
 const PERMANENT_PROJECTS: Project[] = [
+  // [PASTE NEW PROJECTS HERE] ------------------------------------------------------
+  
   {
     id: 'sys-001',
     title: 'High-Frequency Trading Bot',
@@ -39,8 +49,13 @@ const PERMANENT_PROJECTS: Project[] = [
     tags: ['C++', 'Dashboard', 'IoT'],
     type: 'DATA',
     status: 'LIVE'
-  }
+  },
+  
+  // --------------------------------------------------------------------------------
 ];
+
+// ==================================================================================
+
 
 const App: React.FC = () => {
   const [showAdmin, setShowAdmin] = useState(false);
@@ -56,10 +71,14 @@ const App: React.FC = () => {
         try {
           const localProjects = JSON.parse(saved);
           // Merge local projects with permanent ones (Local first to show newest)
-          setProjects([...localProjects, ...PERMANENT_PROJECTS]);
+          // We filter out duplicates based on ID if any exist
+          const uniquePermanent = PERMANENT_PROJECTS.filter(p => !localProjects.some((l: Project) => l.id === p.id));
+          setProjects([...localProjects, ...uniquePermanent]);
         } catch (e) {
           console.error("Failed to load local projects", e);
         }
+      } else {
+        setProjects(PERMANENT_PROJECTS);
       }
     };
 
